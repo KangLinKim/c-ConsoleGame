@@ -12,7 +12,7 @@ class MazeRunner {
 		char **map;
 		const int mapHeight;
 		const int mapWidth;
-		bool isPlaying;
+		bool isPlaying = false;
 
 		int numOfEnemys;
 

@@ -2,7 +2,7 @@
 
 void Game::TitleDraw() {
 	printf("\n\n\n\n");
-	printf("ESCAPE");
+	printf("C++ Console Games");
 	printf("\n\n\n\n");
 }
 

@@ -1,19 +1,14 @@
 #include "Minesweeper.h"
 
 Minesweeper::Minesweeper(const int &mapWidth, const int &mapHeight) : mapHeight(mapHeight), mapWidth(mapWidth) {
-	map = new char *[mapHeight];
-	for (int i = 0; i < mapHeight; i++) {
-		map[i] = new char[mapWidth];
-		for (int j = 0; j < mapWidth; j++) {
-			map[i][j] = '0';
-		}
-	}
+	map = new cell *[mapHeight];
 
-	mapCover = new bool *[mapHeight];
 	for (int i = 0; i < mapHeight; i++) {
-		mapCover[i] = new bool[mapWidth];
+		map[i] = new cell[mapWidth];
+
 		for (int j = 0; j < mapWidth; j++) {
-			mapCover[i][j] = false;
+			map[i][j].type = '0';
+			map[i][j].cover = true;
 		}
 	}
 
@@ -28,7 +23,7 @@ void Minesweeper::Move(int &x, int &y, int _x, int _y) {
 
 	if (whereToX >= 0 && whereToX < mapWidth && whereToY >= 0 && whereToY < mapHeight) {
 		util.Gotoxy(x, y);
-		if (!mapCover[y][x]) {
+		if (map[y][x].cover) {
 			util.SetColor(white, white);
 			cout << " ";
 		} else {
@@ -47,8 +42,8 @@ void Minesweeper::Pang(int x, int y) {
 	if (x < 0 || x > mapWidth - 1 || y < 0 || y > mapHeight - 1) {
 		return;
 	}
-	if (!mapCover[y][x]) {
-		mapCover[y][x] = true;
+	if (map[y][x].cover) {
+		map[y][x].cover = false;
 	} else {
 		return;
 	}
@@ -102,12 +97,12 @@ void Minesweeper::GameLoop() {
 }
 
 bool Minesweeper::DrawCell(int &x, int &y) {
-	char &mapObject = map[y][x];
+	char &mapObject = map[y][x].type;
 
-	if (mapCover[y][x]) {
+	if (!map[y][x].cover) {
 		if (mapObject == '0') {
 			util.SetColor(black, black);
-			cout << " ";
+			cout << ' ';
 			return false;
 		} else if (mapObject == 'M') {
 			util.SetColor(red, black);
@@ -136,16 +131,18 @@ void Minesweeper::DrawMap(int *x, int *y) {
 	}
 
 	util.Gotoxy(0, 0);
-	util.SetColor(blue, black);
+	util.SetColor(blue, blue);
 	cout << " ";
 
-	util.SetColor(white, black);
+	util.SetColor(white, white);
+	*x = 0;
+	*y = 0;
 }
 
 void Minesweeper::SelectLandfill() {
 	for (int i = 0; i < numOfMines; i++) {
 		Mine newMine = { util.RandomNumber(mapWidth), util.RandomNumber(mapHeight) };
-		map[newMine.posY][newMine.posX] = 'M';
+		map[newMine.posY][newMine.posX].type = 'M';
 		CheckNearby(newMine.posX, newMine.posY);
 	}
 }
@@ -154,10 +151,10 @@ void Minesweeper::CheckNearby(const int &cellX, const int &cellY) {
 	for (int nearbyX = cellX - 1; nearbyX < cellX + 2; nearbyX++) {
 		for (int nearbyY = cellY - 1; nearbyY < cellY + 2; nearbyY++) {
 			if (nearbyX >= 0 && nearbyX < mapWidth && nearbyY >= 0 && nearbyY < mapHeight) {
-				if (map[nearbyY][nearbyX] != 'M') {
-					int tmp = map[nearbyY][nearbyX] - '0';
+				if (map[nearbyY][nearbyX].type != 'M') {
+					int tmp = map[nearbyY][nearbyX].type - '0';
 					tmp += 1;
-					map[nearbyY][nearbyX] = tmp + '0';
+					map[nearbyY][nearbyX].type = tmp + '0';
 				}
 			}
 		}
@@ -167,7 +164,7 @@ void Minesweeper::CheckNearby(const int &cellX, const int &cellY) {
 void Minesweeper::GameFail(char gameObject) {
 	for (int y = 0; y < mapHeight; y++) {
 		for (int x = 0; x < mapWidth; x++) {
-			if (map[y][x] == gameObject) {
+			if (map[y][x].type == gameObject) {
 				util.Gotoxy(x, y);
 				cout << gameObject;
 			}

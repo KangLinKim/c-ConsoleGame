@@ -1,7 +1,7 @@
 #include "Utils.h"
 
 void Utils::Init() {
-	system("mode con cols = 56 lines = 20 | title 게임제목");
+	system("mode con cols = 56 lines = 20 | title C++ Games");
 
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);	//콘솔 핸들가져오기
 	CONSOLE_CURSOR_INFO consoleCursor;

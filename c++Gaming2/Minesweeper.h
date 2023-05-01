@@ -7,8 +7,12 @@
 
 class Minesweeper {
 	private :
-		char **map;
-		bool **mapCover;
+		struct cell {
+			char type;
+			bool cover;
+		};
+
+		cell **map;
 		int mapWidth;
 		int mapHeight;
 
